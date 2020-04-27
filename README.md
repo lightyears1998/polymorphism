@@ -1,3 +1,3 @@
-# Algorithm Code
+# Polymorphism
 
-This is a collection of code of practiced algorithm topic or problems.
+This is a collection of code that I wrote when practicing to solve algorithm problems.
