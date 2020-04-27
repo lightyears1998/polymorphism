@@ -1,4 +1,5 @@
 // https://leetcode-cn.com/problems/add-two-numbers/
+// 模拟
 
 /**
  * Definition for singly-linked list.
