@@ -190,3 +190,22 @@ SELECT * FROM `cinema`
 WHERE `id` % 2 = 1 AND `description` NOT REGEXP "\\bboring\\b"
 ORDER BY `rating` DESC;
 ```
+
+## [196](https://leetcode-cn.com/problems/delete-duplicate-emails/) 删除重复的电子邮箱
+
+注意到，这里如果只是使用一层 SELECT，MySQL 会报错。报错原因可参考 [StackOverflow](https://stackoverflow.com/a/9843719/8762529)。
+
+``` sql
+DELETE FROM `Person` WHERE `Id` NOT IN (
+    SELECT `MinId` FROM (
+        SELECT MIN(`Id`) AS `MinId` FROM `Person` GROUP BY `Email`
+    ) AS `t`
+)
+```
+
+## [175](https://leetcode-cn.com/problems/combine-two-tables/) 组合两个表
+
+``` sql
+SELECT `FirstName`, `LastName`, `City`, `State` FROM `Person`
+LEFT OUTER JOIN `Address` USING (`PersonId`)
+```
