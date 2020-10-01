@@ -375,3 +375,97 @@ WHERE `E`.`Salary` > (
     WHERE `I`.`Id` = `E`.`ManagerId`
 )
 ```
+
+## [1327](https://leetcode-cn.com/problems/list-the-products-ordered-in-a-period/) 列出指定时间段内所有的下单产品
+
+``` sql
+SELECT `product_name`, SUM(`unit`) AS `unit` FROM `Products`
+INNER JOIN `Orders` USING (`product_id`)
+WHERE EXTRACT(YEAR_MONTH FROM `order_date`) = 202002
+GROUP BY `product_name`
+HAVING SUM(`unit`) >= 100
+```
+
+## [630](https://leetcode-cn.com/problems/consecutive-available-seats/) 连续空余座位
+
+``` sql
+SELECT `a`.`seat_id` FROM `cinema` AS `a`
+WHERE `a`.`free` = 1 AND EXISTS (
+    SELECT true FROM `cinema` AS `b`
+    WHERE (`b`.`seat_id` = `a`.`seat_id` - 1 AND `b`.`free` = 1)
+    OR (`b`.`seat_id` = `a`.`seat_id` + 1 AND `b`.`free` = 1)
+)
+ORDER BY `a`.`seat_id` ASC
+```
+
+## [607](https://leetcode-cn.com/problems/sales-person/) 销售员
+
+``` sql
+SELECT `salesperson`.`name` FROM `salesperson`
+WHERE `salesperson`.`name` NOT IN (
+    SELECT `salesperson`.`name` FROM `salesperson`
+    INNER JOIN `orders` USING (`sales_id`)
+    INNER JOIN `company` USING (`com_id`)
+    WHERE `company`.`name` = 'RED'
+)
+```
+
+## [1485](https://leetcode-cn.com/problems/group-sold-products-by-the-date/) 按日期分组销售产品
+
+注意 `COUNT(DISTINCT)` 以及 [`GROUP_CONCAT`](https://dev.mysql.com/doc/refman/8.0/en/aggregate-functions.html#function_count) 函数的使用。
+
+``` sql
+SELECT
+    `sell_date`,
+    COUNT(DISTINCT `product`) AS `num_sold`,
+    GROUP_CONCAT(DISTINCT `product` ORDER BY `product` ASC SEPARATOR ',') AS `products`
+FROM `Activities`
+GROUP BY `sell_date`
+ORDER BY `sell_date` ASC
+```
+
+## [1294](https://leetcode-cn.com/problems/weather-type-in-each-country/) 不同国家的天气类型
+
+注意 `CASE WHEN ... THEN ... WHEN ... THEN ... ELSE ... END` 的使用，参见 [MySQL Control Flow](https://dev.mysql.com/doc/refman/8.0/en/flow-control-functions.html)。
+
+``` sql
+SELECT
+    `country_name`,
+    CASE WHEN AVG(`weather_state`) <= 15 THEN 'Cold'
+    WHEN AVG(`weather_state`) >= 25 THEN 'Hot'
+    ELSE 'Warm'
+    END AS `weather_type`
+FROM `Countries`
+INNER JOIN `Weather` USING (`country_id`)
+WHERE EXTRACT(YEAR_MONTH FROM `day`) = 201911
+GROUP BY `country_name`
+```
+
+## [1075](https://leetcode-cn.com/problems/project-employees-i/) 项目员工 I
+
+``` sql
+SELECT `project_id`, ROUND(SUM(`experience_years`) / COUNT(`employee_id`), 2) AS `average_years`
+FROM `Project`
+INNER JOIN `Employee` USING (`employee_id`)
+GROUP BY `project_id`
+```
+
+## [1407](https://leetcode-cn.com/problems/top-travellers/) 排名靠前的旅行者
+
+``` sql
+SELECT `name`, IFNULL(SUM(`distance`), 0) AS `travelled_distance`
+FROM `Users`
+LEFT OUTER JOIN `Rides` ON `Users`.`id` = `Rides`.`user_id`
+GROUP BY `name`
+ORDER BY `travelled_distance` DESC, `name` ASC
+```
+
+## [610](https://leetcode-cn.com/problems/triangle-judgement/) 判断三角形
+
+``` sql
+SELECT `x`, `y`, `z`, CASE
+    WHEN `x` + `y` > `z` AND `y` + `z` > `x` AND `x` + `z` > `y` THEN 'Yes'
+    ELSE 'No'
+END AS `triangle`
+FROM `triangle`
+```
