@@ -238,3 +238,140 @@ BEGIN
   );
 END
 ```
+
+## [1581](https://leetcode-cn.com/problems/customer-who-visited-but-did-not-make-any-transactions/) Customer Who Visited but Did Not Make Any Transactions
+
+``` sql
+SELECT `customer_id`, COUNT(*) AS `count_no_trans` FROM `Visits`
+WHERE `visit_id` NOT IN (
+    SELECT `visit_id` FROM `Transactions`
+)
+GROUP BY `customer_id`
+ORDER BY `count_no_trans` DESC
+```
+
+## [1587](https://leetcode-cn.com/problems/bank-account-summary-ii) Bank Account Summary II
+
+``` sql
+SELECT `name`, SUM(`amount`) AS `balance` FROM `Users`
+LEFT OUTER JOIN `Transactions` USING (`account`)
+GROUP BY `account`
+HAVING `balance` > 10000
+```
+
+## [1565](https://leetcode-cn.com/problems/unique-orders-and-customers-per-month/) Unique Orders and Customers Per Month
+
+注意 MySQL 的[日期格式化函数](https://dev.mysql.com/doc/refman/8.0/en/date-and-time-functions.html#function_date-format)。
+
+``` sql
+SELECT
+    DATE_FORMAT(`order_date`, '%Y-%m') AS `month`,
+    COUNT(*) AS `order_count`,
+    COUNT(DISTINCT `customer_id`) AS `customer_count`
+FROM `Orders`
+WHERE `invoice` > 20
+GROUP BY `month`
+```
+
+## [1571](https://leetcode-cn.com/problems/warehouse-manager/) 仓库经理
+
+``` sql
+SELECT `name` AS `warehouse_name`, SUM(`Width` * `Length` * `Height` * `units`) AS `volume`
+FROM `Warehouse`
+INNER JOIN `Products` USING (`product_id`)
+GROUP BY `warehouse_name`
+```
+
+## [1148](https://leetcode-cn.com/problems/article-views-i/) 文章浏览
+
+``` sql
+SELECT
+DISTINCT `author_id` AS `id`
+FROM `Views`
+WHERE `author_id` = `viewer_id`
+ORDER BY `id` ASC
+```
+
+## [1082](https://leetcode-cn.com/problems/sales-analysis-i/) 销售分析 I
+
+``` sql
+SELECT `actor_id`, `director_id` FROM `ActorDirector`
+GROUP BY `actor_id`, `director_id`
+HAVING COUNT(*) >= 3
+```
+
+## [586](https://leetcode-cn.com/problems/customer-placing-the-largest-number-of-orders/) 订单最多的客户
+
+``` sql
+SELECT `customer_number`
+FROM `orders`
+GROUP BY `customer_number`
+ORDER BY COUNT(*) DESC
+LIMIT 1
+```
+
+``` sql
+-- 如果多位客户订单数并列最多
+SELECT `customer_number`
+FROM `orders`
+GROUP BY `customer_number`
+HAVING COUNT(*) = (
+    SELECT COUNT(*) AS `count`
+    FROM `orders`
+    GROUP BY `customer_number`
+    ORDER BY `count` DESC
+    LIMIT 1
+)
+```
+
+## [1082](https://leetcode-cn.com/problems/sales-analysis-i/) 销售分析 I
+
+``` sql
+SELECT `seller_id`
+FROM `Sales`
+GROUP BY `seller_id`
+HAVING SUM(`price`) = (
+    SELECT SUM(`price`) AS `sum` FROM `Sales`
+    GROUP BY `seller_id`
+    ORDER BY `sum` DESC
+    LIMIT 1
+)
+```
+
+## [511](https://leetcode-cn.com/problems/game-play-analysis-i/) 游戏玩法分析
+
+``` sql
+SELECT `player_id`, MIN(`event_date`) AS `first_login`
+FROM `Activity`
+GROUP BY `player_id`
+```
+
+## [577](https://leetcode-cn.com/problems/employee-bonus/) 员工奖金
+
+``` sql
+SELECT `name`, `bonus` FROM `Employee`
+LEFT OUTER JOIN `Bonus` USING (`empId`)
+WHERE `bonus` IS NULL OR `bonus` < 1000
+```
+
+## [181](https://leetcode-cn.com/problems/employees-earning-more-than-their-managers/) 超过经理收入的员工
+
+``` sql
+-- 表连接
+-- faster
+SELECT `Employee`.`Name` AS `Employee` FROM `Employee`
+LEFT OUTER JOIN `Employee` AS `Manager` ON `Employee`.`ManagerId` = `Manager`.`Id`
+WHERE `Employee`.`Salary` > `Manager`.`Salary`
+```
+
+``` sql
+-- 相关子查询
+-- slower
+SELECT `E`.`Name` AS `Employee`
+FROM `Employee` AS `E`
+WHERE `E`.`Salary` > (
+    SELECT `I`.`Salary`
+    FROM `Employee` AS `I`
+    WHERE `I`.`Id` = `E`.`ManagerId`
+)
+```
