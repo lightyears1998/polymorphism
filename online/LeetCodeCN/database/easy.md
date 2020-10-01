@@ -209,3 +209,32 @@ DELETE FROM `Person` WHERE `Id` NOT IN (
 SELECT `FirstName`, `LastName`, `City`, `State` FROM `Person`
 LEFT OUTER JOIN `Address` USING (`PersonId`)
 ```
+
+## [176](https://leetcode-cn.com/problems/second-highest-salary/) 第二高的工资
+
+**注意对 `NULL` 的处理**
+
+``` sql
+SELECT (
+    SELECT DISTINCT `Salary` FROM `Employee`
+    ORDER BY `Salary` DESC
+    LIMIT 1
+    OFFSET 1
+) AS `SecondHighestSalary`;
+```
+
+## [177](https://leetcode-cn.com/problems/nth-highest-salary/) 第 N 高的工资
+
+注意对 [SQL 变量](https://dev.mysql.com/doc/refman/8.0/en/stored-program-variables.html)的处理。
+
+``` sql
+CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+BEGIN
+  DECLARE offset_val INT DEFAULT N-1;
+  RETURN (
+      SELECT DISTINCT `Salary` FROM `Employee`
+      ORDER BY `Salary` DESC
+      LIMIT 1 OFFSET offset_val
+  );
+END
+```
