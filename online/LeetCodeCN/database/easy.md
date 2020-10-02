@@ -469,3 +469,71 @@ SELECT `x`, `y`, `z`, CASE
 END AS `triangle`
 FROM `triangle`
 ```
+
+## [1511](https://leetcode-cn.com/problems/customer-order-frequency/) 消费者下单频率
+
+在 MySQL 里，连表查询比相关子查询更快。
+
+``` sql
+-- 重复的临时表方案
+-- slower 冗余（不推荐）
+SELECT `a`.`customer_id`, `a`.`name` FROM `Customers` AS `a`
+WHERE EXISTS (
+    SELECT true FROM (
+    SELECT
+        `customer_id`,
+        `name`,
+        EXTRACT(YEAR_MONTH FROM `order_date`) AS `yyyymm`,
+        SUM(`price` * `quantity`) AS `total` FROM `Customers`
+    INNER JOIN `Orders` USING (`customer_id`)
+    INNER JOIN `Product` USING (`product_id`)
+    GROUP BY `customer_id`, `yyyymm`
+) AS `b` WHERE `a`.`customer_id` = `b`.`customer_id` AND `yyyymm` = 202006 AND `total` >= 100
+) AND EXISTS (
+    SELECT true FROM (
+    SELECT
+        `customer_id`,
+        `name`,
+        EXTRACT(YEAR_MONTH FROM `order_date`) AS `yyyymm`,
+        SUM(`price` * `quantity`) AS `total` FROM `Customers`
+    INNER JOIN `Orders` USING (`customer_id`)
+    INNER JOIN `Product` USING (`product_id`)
+    GROUP BY `customer_id`, `yyyymm`
+) AS `b` WHERE `a`.`customer_id` = `b`.`customer_id` AND `yyyymm` = 202007 AND `total` >= 100
+)
+```
+
+``` sql
+--- 连表查询
+SELECT `customer_id`, `name` FROM (
+    SELECT
+        `customer_id`,
+        `name`,
+        EXTRACT(YEAR_MONTH FROM `order_date`) AS `yyyymm`,
+        SUM(`price` * `quantity`) AS `total` FROM `Customers`
+    INNER JOIN `Orders` USING (`customer_id`)
+    INNER JOIN `Product` USING (`product_id`)
+    WHERE EXTRACT(YEAR_MONTH FROM `order_date`) IN (202006, 202007)
+    GROUP BY `customer_id`, `yyyymm`
+    HAVING `total` >= 100
+) AS `t`
+GROUP BY `customer_id`, `name`
+HAVING COUNT(*) = 2
+```
+
+``` sql
+-- 直接构造 Having 子句
+SELECT `customer_id`, `name` FROM (
+    SELECT
+        `customer_id`,
+        `name`,
+        EXTRACT(YEAR_MONTH FROM `order_date`) AS `yyyymm`
+    FROM `Customers`
+    INNER JOIN `Orders` USING (`customer_id`)
+    INNER JOIN `Product` USING (`product_id`)
+    WHERE EXTRACT(YEAR_MONTH FROM `order_date`) IN (202006, 202007)
+    GROUP BY `customer_id`, `name`
+    HAVING SUM(IF(`yyyymm` = 202006, `quantity` * `price`, 0)) >= 100
+    AND SUM(IF(`yyyymm` = 202007, `quantity` * `price`, 0)) >= 100
+) AS `t`
+```
