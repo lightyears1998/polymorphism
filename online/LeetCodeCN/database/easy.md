@@ -521,6 +521,8 @@ GROUP BY `customer_id`, `name`
 HAVING COUNT(*) = 2
 ```
 
+注意结合 `IF` 可以写出比较好的句子。
+
 ``` sql
 -- 直接构造 Having 子句
 SELECT `customer_id`, `name` FROM (
@@ -537,3 +539,20 @@ SELECT `customer_id`, `name` FROM (
     AND SUM(IF(`yyyymm` = 202007, `quantity` * `price`, 0)) >= 100
 ) AS `t`
 ```
+
+## [1211](https://leetcode-cn.com/problems/queries-quality-and-percentage/) 查询结果的质量和占比
+
+``` sql
+SELECT
+    `query_name`,
+    ROUND(AVG(`rating` / `position`), 2) AS `quality`,
+    ROUND((SUM(IF(`rating` < 3, 1, 0)) / COUNT(*)) * 100, 2) AS `poor_query_percentage`
+FROM `Queries`
+GROUP BY `query_name`
+```
+
+## []() 制作会话柱状图
+
+注意学习使用 `UNION` 建立新表的技术。
+
+// @TODO
