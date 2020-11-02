@@ -540,6 +540,18 @@ SELECT `customer_id`, `name` FROM (
 ) AS `t`
 ```
 
+## [1607](https://leetcode-cn.com/problems/sellers-with-no-sales/) Sellers With No Sales
+
+``` sql
+SELECT `seller_name` FROM `Seller`
+WHERE `seller_id` NOT IN (
+    SELECT `seller_id` FROM `Seller`
+    LEFT OUTER JOIN `Orders` USING (`seller_id`)
+    WHERE EXTRACT(YEAR FROM `sale_date`) = 2020
+)
+ORDER BY `seller_name` ASC
+```
+
 ## [1211](https://leetcode-cn.com/problems/queries-quality-and-percentage/) 查询结果的质量和占比
 
 ``` sql
@@ -551,8 +563,29 @@ FROM `Queries`
 GROUP BY `query_name`
 ```
 
-## []() 制作会话柱状图
+## [1435](https://leetcode-cn.com/problems/create-a-session-bar-chart/) 制作会话柱状图
 
 注意学习使用 `UNION` 建立新表的技术。
 
-// @TODO
+``` sql
+SELECT `bin`, IFNULL(`total`, 0) AS `total` FROM (
+    SELECT CASE
+        WHEN `duration` < 5 THEN '[0-5>'
+        WHEN `duration` < 10 THEN '[5-10>'
+        WHEN `duration` < 15 THEN '[10-15>'
+        ELSE '15 or more'
+    END AS `bin`, COUNT(*) AS `total`
+    FROM (
+        SELECT `duration` / 60 AS `duration` FROM `Sessions`
+    ) AS `t1`
+    GROUP BY `bin`
+) AS `t2`
+RIGHT JOIN (
+    SELECT '[0-5>' AS `bin` UNION SELECT '[5-10>' UNION SELECT '[10-15>' UNION SELECT '15 or more'
+) AS `t3`
+USING (`bin`)
+```
+
+## []()
+
+注意学习结合 CASE 以及聚集函数的技术。
