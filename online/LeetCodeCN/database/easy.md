@@ -586,10 +586,6 @@ RIGHT JOIN (
 USING (`bin`)
 ```
 
-## []()
-
-注意学习结合 CASE 以及聚集函数的技术。
-
 ## [1623](https://leetcode-cn.com/problems/all-valid-triplets-that-can-represent-a-country/) 三人代表国家队
 
 ``` sql
@@ -604,4 +600,59 @@ AND `SchoolB`.`student_name` != `SchoolC`.`student_name`
 AND `SchoolA`.`student_id` != `SchoolB`.`student_id`
 AND `SchoolA`.`student_id` != `SchoolC`.`student_id`
 AND `SchoolB`.`student_id` != `SchoolC`.`student_id`
+```
+
+## [1633](https://leetcode-cn.com/problems/percentage-of-users-attended-a-contest/) 各赛事的用户注册率
+
+注意一下两种写法是等价的：
+
+``` sql
+SELECT `contest_id`, ROUND(COUNT(`user_id`) / (SELECT COUNT(*) FROM `Users`) * 100, 2)  AS `percentage`
+FROM `Register`
+GROUP BY `Register`.`contest_id`
+ORDER BY `percentage` DESC, `contest_id` ASC
+```
+
+``` sql
+WITH `t1` AS (
+    SELECT COUNT(`user_id`) AS `user_count` FROM `Users`
+)
+SELECT `contest_id`, ROUND(COUNT(`user_id`) / `t1`.`user_count` * 100, 2)  AS `percentage`
+FROM `Register`, `t1`
+GROUP BY `Register`.`contest_id`
+ORDER BY `percentage` DESC, `contest_id` ASC
+```
+
+因为 MySQL 可以自行优化非关联子查询。
+
+## [1241](https://leetcode-cn.com/problems/number-of-comments-per-post/) 每个帖子的评论数
+
+``` sql
+-- Slower
+WITH `t1` AS (
+    SELECT DISTINCT `sub_id` AS `post_id`
+    FROM `Submissions`
+    WHERE `parent_id` IS NULL
+), `t2` AS (
+    SELECT DISTINCT `post_id`, `sub_id` FROM `t1`
+    INNER JOIN `Submissions`
+    ON `t1`.`post_id` = `Submissions`.`parent_id`
+)
+SELECT `t1`.`post_id`, COUNT(`sub_id`) AS `number_of_comments`
+FROM `t1`
+LEFT OUTER JOIN `t2` ON `t1`.`post_id` = `t2`.`post_id`
+GROUP BY `t1`.`post_id`
+ORDER BY `post_id` ASC
+```
+
+``` sql
+-- better
+SELECT post_id, COUNT(sub_id) AS number_of_comments FROM (
+    SELECT DISTINCT Post.sub_id AS post_id, Submissions.sub_id
+    FROM Submissions AS Post
+    LEFT OUTER JOIN Submissions ON Post.sub_id = Submissions.parent_id
+    WHERE Post.parent_id IS NULL
+) AS t1
+GROUP BY post_id
+ORDER BY post_id ASC
 ```
