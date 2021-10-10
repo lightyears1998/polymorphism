@@ -1,36 +1,36 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// ÅÅĞòÊı¾İÉú³ÉÆ÷
-// ²ÎÊıt - Êı¾İ×éÊı
-// ²ÎÊın - Êı¾İ´óĞ¡
+// æ’åºæ•°æ®ç”Ÿæˆå™¨
+// å‚æ•°t - æ•°æ®ç»„æ•°
+// å‚æ•°n - æ•°æ®å¤§å°
 
 int n = 50, t = 100;
-long long arr[1000]; 
+long long arr[1000];
 
 int main()
 {
 	FILE *in = fopen("stdin.txt", "w");
 	FILE *out = fopen("stdout.txt", "w");
-	
-	fprintf(in, "%d\n", t); 
+
+	fprintf(in, "%d\n", t);
 	while (t--)
-	{ 
-		fprintf(in, "%d\n", n); 
+	{
+		fprintf(in, "%d\n", n);
 		for (int i=0; i<n; ++i) {
 			arr[i] = rand()*rand();
 			if (i) fprintf(in, " ");
-			fprintf(in, "%lld", arr[i]); 
+			fprintf(in, "%lld", arr[i]);
 		}
-		fprintf(in, "\n"); 
-		
-		sort(arr, arr+n); 
+		fprintf(in, "\n");
+
+		sort(arr, arr+n);
 		for (int i=0; i<n; ++i) {
 			if (i) fprintf(out, " ");
-			fprintf(out, "%lld", arr[i]); 
+			fprintf(out, "%lld", arr[i]);
 		}
-		fprintf(out, "\n"); 
-	} 
-	
-	fclose(in), fclose(out); 
+		fprintf(out, "\n");
+	}
+
+	fclose(in), fclose(out);
 }

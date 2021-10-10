@@ -1,41 +1,40 @@
 #include <bits/stdc++.h>
 using namespace std;
-const int maxN = 1008611; 
+const int maxN = 1008611;
 
-// 裁判程序 
-// 参数standard - 标准答案 
-// 参数subject  - 用户答案  
+// 瑁佸垽绋嬪簭
+// 鍙傛暟standard - 鏍囧噯绛旀
+// 鍙傛暟subject  - 鐢ㄦ埛绛旀
 
 int main()
 {
 	FILE *standard = fopen("stdout.txt", "r");
-	FILE *subject  = fopen("out.txt", "r"); 
-	
-	bool ok = true; int kase = 0; 
+	FILE *subject  = fopen("out.txt", "r");
+
+	bool ok = true; int kase = 0;
 	while (true)
 	{
-		char std[maxN], sub[maxN]; 
+		char std[maxN], sub[maxN];
 		if (fgets(std, maxN, standard) == NULL) {
 			break;
 		}
 		if (fgets(sub, maxN, subject) == NULL) {
 			ok = false;
-			break; 
-		} 
+			break;
+		}
 		if (strcmp(std, sub) != 0) {
 			ok = false;
 			break;
-		} 
-		++kase; 
+		}
+		++kase;
 	}
-	
-	if (ok) {
-		printf("Accepted\n"); 
-	} 
-	else {
-		printf("Wrong Answer on Test %d\n", kase+1); 
-	} 
-	
-	getchar(); 
-}
 
+	if (ok) {
+		printf("Accepted\n");
+	}
+	else {
+		printf("Wrong Answer on Test %d\n", kase+1);
+	}
+
+	getchar();
+}

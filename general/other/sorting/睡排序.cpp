@@ -8,12 +8,12 @@ void sleep()
 	while (--ms);
 }
 
-// O(¡Þ) : O(n)
+// O(âˆž) : O(n)
 void sleep_sort(long long *arr, int n)
 {
 	int a = rand()*rand() % n, b = rand()*rand() % n;
 	swap(arr[a], arr[b]);
-	
+
 	bool ok = true;
 	for (int i = 0; i < n-1; ++i)
 	{
@@ -31,7 +31,7 @@ int main()
 	freopen("in.txt", "r", stdin);
 	freopen("out.txt", "w", stdout);
 	#endif
-	
+
 	int t; scanf("%d", &t);
 	while (t--)
 	{
@@ -49,4 +49,3 @@ int main()
 		putchar('\n');
 	}
 }
-
