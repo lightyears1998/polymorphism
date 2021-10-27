@@ -1,5 +1,8 @@
 .vscode
 
+in.txt
+out.txt
+
 # Created by https://www.gitignore.io/api/go,c++,java,csharp,python
 # Edit at https://www.gitignore.io/?templates=go,c++,java,csharp,python
 
